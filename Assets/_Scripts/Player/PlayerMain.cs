@@ -11,7 +11,7 @@ public class PlayerMain : MonoBehaviour
     //Object components
     [SerializeField] GameObject cameraHolder;
     [SerializeField] Transform orientation;
-    [SerializeField] Transform playerModelTransform;
+    [SerializeField] Transform weaponsModel;
     [SerializeField] Camera camera;
     [SerializeField] Rigidbody rigidbody;
    
@@ -30,7 +30,8 @@ public class PlayerMain : MonoBehaviour
     void Start()
     {
         //FORSE DOVREBBE ESSERE SPOSTATO IN UN ALTRO SCRIPT
-        playerModelTransform.parent = camera.transform;
+        if(weaponsModel)
+            weaponsModel.parent = camera.transform;
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
     }
