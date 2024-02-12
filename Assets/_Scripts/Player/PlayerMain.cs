@@ -10,8 +10,11 @@ public class PlayerMain : MonoBehaviour
     [SerializeField] float sensY = 800;
 
     [Header("Movement")]
-    [SerializeField] float movSpeed = 10f;
+    float movSpeed = 10f;
+    [SerializeField] float slowWalkSpeed = 3f;
+    [SerializeField] float walkSpeed = 3f;
     [SerializeField] float groundDrag;
+    [SerializeField] KeyCode ShiftKey = KeyCode.LeftShift;
 
     [Header("Ground Check")]
     [SerializeField] LayerMask groundMask; 
@@ -22,6 +25,7 @@ public class PlayerMain : MonoBehaviour
     [SerializeField] float AirMovFactor = 0.4f;
     [SerializeField] float jumpForce = 10;
     [SerializeField] float jumpCooldown = 0.2f;
+
     bool canJump = true;
     //Object components
     [SerializeField] GameObject cameraHolder;
@@ -78,6 +82,11 @@ public class PlayerMain : MonoBehaviour
 
     private void Inputs()
     {
+        if (Input.GetKey(ShiftKey))
+            movSpeed = slowWalkSpeed;
+        else
+            movSpeed = walkSpeed;
+
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
@@ -105,8 +114,9 @@ public class PlayerMain : MonoBehaviour
 
         if(grounded)
             rigidbody.AddForce(moveDir * movSpeed * 10f, ForceMode.Force);
+
         else if(!grounded)
-            rigidbody.AddForce(moveDir * movSpeed * 10f * AirMovFactor, ForceMode.Force);
+            rigidbody.AddForce(moveDir * movSpeed * 10f * AirMovFactor , ForceMode.Force);
     }
 
     private void SpeedControl()
