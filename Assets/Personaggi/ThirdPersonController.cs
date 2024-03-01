@@ -33,7 +33,7 @@ public class ThirdPersonController : MonoBehaviour
             isWalkingArmaPressed = false;
             animator.SetBool("corsa", isWalkingArmaPressed);
         }
-
+        //denis gay
         if (Input.GetKeyDown(KeyCode.R))
         {
             
