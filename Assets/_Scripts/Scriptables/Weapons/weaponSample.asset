@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c8689508dc6eeea4483ad348aea3b7f5, type: 3}
+  m_Name: weaponSample
+  m_EditorClassIdentifier: 
+  <firingMode>k__BackingField: 0
+  <weaponType>k__BackingField: 0
+  <fireRate>k__BackingField: 0
+  <magSize>k__BackingField: 0
+  <reloadTime>k__BackingField: 0
+  <NumberOfMags>k__BackingField: 0
+  <RecoilValues>k__BackingField: 
+  <fallofs>k__BackingField:
+  - distance: 30
+    damageReduction: 1
+  - distance: 50
+    damageReduction: 0.8
