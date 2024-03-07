@@ -10,15 +10,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c8689508dc6eeea4483ad348aea3b7f5, type: 3}
-  m_Name: weaponSample
+  m_Name: AK47
   m_EditorClassIdentifier: 
-  <firingMode>k__BackingField: 0
-  <weaponType>k__BackingField: 0
-  <fireRate>k__BackingField: 0
-  <magSize>k__BackingField: 0
-  <reloadTime>k__BackingField: 0
-  <NumberOfMags>k__BackingField: 0
+  <firingMode>k__BackingField: 2
+  <weaponType>k__BackingField: 4
+  <fireRate>k__BackingField: 7
+  <magSize>k__BackingField: 25
+  <reloadTime>k__BackingField: 2.5
+  <NumberOfMags>k__BackingField: 1
   <RecoilValues>k__BackingField: 
+  <heatDecay>k__BackingField: 0.1
+  <heatWaitDecayTime>k__BackingField: 0.5
+  <heatTimeCoefficient>k__BackingField: 1
   <fallofs>k__BackingField:
   - distance: 30
     damageReduction: 1

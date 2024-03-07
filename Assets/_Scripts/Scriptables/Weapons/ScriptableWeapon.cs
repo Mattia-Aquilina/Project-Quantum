@@ -14,7 +14,9 @@ public class ScriptableWeapon : ScriptableObject
     [field: SerializeField] public float reloadTime { get; private set; }
     [field: SerializeField] public int NumberOfMags { get; private set; }
     [field: SerializeField] public int[] RecoilValues { get; private set; }
-
+    [field: SerializeField] public float heatDecay { get; private set; } = 0.1f;
+    [field: SerializeField] public float heatWaitDecayTime { get; private set; } 
+    [field: SerializeField] public int heatTimeCoefficient { get; private set; }
     [field: SerializeField] public FallofReduction[] fallofs { get; private set; }
 }
 public enum WeaponType
