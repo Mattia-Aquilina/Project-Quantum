@@ -3,7 +3,10 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - legs
+  - body
+  - head
   layers:
   - Default
   - TransparentFX
@@ -14,11 +17,11 @@ TagManager:
   - TOP
   - Ground
   - PlayerHands
-  - 
-  - 
-  - 
-  - 
-  - 
+  - hard Walls
+  - soft walls
+  - medium walls
+  - unWallbangable
+  - hittable
   - 
   - 
   - 

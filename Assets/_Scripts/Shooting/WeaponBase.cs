@@ -1,10 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.ProBuilder;
+using static UnityEditor.Experimental.GraphView.GraphView;
 
 /// <summary>
 /// Basic class for all the weapons
@@ -13,9 +15,19 @@ public abstract class WeaponBase : MonoBehaviour
 {
 
     [Header("Debug ONLY")]
+    [SerializeField] LayerMask HardWalls;
+    [SerializeField] LayerMask MediumWalls;
+    [SerializeField] LayerMask SoftWalls;
+    [SerializeField] LayerMask hittable;
+    [SerializeField] LayerMask notWallbangable;
+    [SerializeField] LayerMask canHitObjects;
+    private List<ShootOutcome> outcome = new();
+
     [SerializeField] TextMeshProUGUI heatText;
     [SerializeField] TextMeshProUGUI magText;
     [SerializeField] Camera camera;
+
+    
     private string[] StateEncode = { "idle", "reloading", "shooting", "inspecting" };
     //Dati dell'arma
     [field: SerializeField]public ScriptableWeapon ScriptableWeapon { get; private set; }
@@ -38,6 +50,8 @@ public abstract class WeaponBase : MonoBehaviour
     protected int totalBullets;
     protected float currentHeat = 0;
     protected float heatLockedTill = 0f;
+
+
     // Start is called before the first frame update
 
     protected virtual void Awake()
@@ -53,6 +67,9 @@ public abstract class WeaponBase : MonoBehaviour
 
     protected virtual void Update()
     {
+
+        Debug.DrawRay(camera.transform.position, camera.transform.forward * 100f, Color.green);
+
         heatText.text = "heat:" + currentHeat.ToString() + "\nstate: " + StateEncode[(int)weaponState];
         magText.text = currentMag.ToString() + "/" + ScriptableWeapon.magSize;
 
@@ -77,6 +94,7 @@ public abstract class WeaponBase : MonoBehaviour
 
     protected void Shoot()
     {
+        Lockshoot();
         //In teoria andrebbe riprodotto un suono adeguato
         if (currentMag <= 0) return;
 
@@ -85,22 +103,88 @@ public abstract class WeaponBase : MonoBehaviour
         currentHeat++;
         heatLockedTill = Time.time + ScriptableWeapon.heatWaitDecayTime;
 
-        Lockshoot();
+        
         //spara con l'arma, utilizza il ray cast, riproduci l'animazione sul modello
+
+
+
         RaycastHit[] hits;
         //var weaponeRecoil = ScriptableWeapon.RecoilValues[Mathf.RoundToInt(currentHeat)];
-        hits = Physics.RaycastAll(camera.transform.position, Vector3.forward, 100f);
 
+
+        hits = Physics.RaycastAll(camera.transform.position, camera.transform.forward, 100f, canHitObjects);
+       
+        //ordiniamo gli hit in base alla distanza (l'ordine non è garantito da RaycastAll
         Array.Sort(hits, (a, b) => Vector3.Distance(a.point, camera.transform.position).CompareTo(Vector3.Distance(b.point, camera.transform.position)));
 
-        for (int i = hits.Length - 1; i < 0; i--)
+        var targetHit = false;
+
+        List<ShootOutcome> shootOutcome = new();
+
+        for (int i = 0; i < hits.Length; i++)
         {
-            Ray ray = new(hits[i].point, hits[i - 1].point);
-            RaycastHit hit;
-            Physics.Raycast(ray, out hit, Vector3.Distance(hits[i].point, hits[i - 1].point) + .5f);
+            LayerMask hitLayer = hits[i].collider.gameObject.layer;
+            //se in ogni momento incotriamo un muro non wallbangabile ci fermiamo
+            if (notWallbangable == (notWallbangable | (1 << hitLayer))) break;
 
 
+            //se l'arma è soft controllo solo il primo hit, visto che non puo wallbangare
+            if (i == 0 && hittable == (hittable | (1 << hitLayer)) && ScriptableWeapon.weaponPenetration == WeaponPenetration.soft)
+            {
+                shootOutcome.Add(new PlayerHit(hits[i].collider.tag, hits[i].collider.gameObject));
+                break;
+            }
+            else if (i == 0 && ScriptableWeapon.weaponPenetration == WeaponPenetration.soft)
+                break;
+
+
+            //gestiamo in maniera specifica l'ultimo elemento dell'array
+            if (i == hits.Length - 1 && !(hittable == (hittable | (1 << hitLayer))))
+                break;
+            else if (i == hits.Length - 1 && (hittable == (hittable | (1 << hitLayer))))
+            {
+                //the last element is a player
+                shootOutcome.Add(new PlayerHit(hits[i].collider.tag, hits[i].collider.gameObject));
+                break;
+            }
+
+            //gestiamo il caso in cui abbiamo colpito un giocatore
+            if(hittable == (hittable | (1 << hitLayer))) {
+                shootOutcome.Add(new PlayerHit(hits[i].collider.tag, hits[i].collider.gameObject));
+            }
+            else { 
+                //abbiamo colpito un muro
+                //controlliamo in base alla penetrazione dell'arma
+                if (ScriptableWeapon.weaponPenetration == WeaponPenetration.hard)
+                {
+                    //abbiamo un arma hard, misuriamo in ogni caso lo spessore del muro colpito
+                    shootOutcome.Add(computeHitObjectDepth(hits[i].point, hits[i + 1].point, hitLayer));          
+                }
+                else if (ScriptableWeapon.weaponPenetration == WeaponPenetration.normal && !(HardWalls == (HardWalls | (1 << hitLayer))))
+                {
+                    shootOutcome.Add(computeHitObjectDepth(hits[i].point, hits[i + 1].point, hitLayer));
+                
+                }
+            }
         }
+
+        this.outcome = shootOutcome;
+
+        //debug
+        foreach (var item in shootOutcome)
+        {
+            Debug.Log(item.ToString());
+        }
+    }
+    private ShootOutcome computeHitObjectDepth(Vector3 pointA, Vector3 pointB, LayerMask hitLayer)
+    {
+        Ray ray = new(pointB, -camera.transform.forward);
+        RaycastHit hit;
+        Physics.Raycast(ray, out hit, Vector3.Distance(pointA, pointB), canHitObjects);
+
+
+        var wallDepth = Vector3.Distance(hit.point, pointA);
+        return new WallHit(hitLayer, wallDepth, pointA, hit.point);
     }
 
     /// <summary>
@@ -142,11 +226,89 @@ public abstract class WeaponBase : MonoBehaviour
         reloading = false;
         currentMag = ScriptableWeapon.magSize;
     }
+
+
+    public void OnDrawGizmos()
+    {
+        if (outcome.Count != 0)
+        {
+            foreach (var item in outcome)
+            {
+                if(item.GetType() == typeof(WallHit))
+                {
+                    var wall = (WallHit)item;
+                    Gizmos.color = Color.yellow;
+                    Gizmos.DrawSphere(wall.entryPoint, .2f);
+                    Gizmos.color = Color.red;
+                    Gizmos.DrawSphere(wall.exitPoint, .2f);
+                }
+
+            }
+        }
+    }
 }
 
 public enum WeaponStates
 {
     idle, reloading, shooting, inspecting
 }
+
+
+public abstract class ShootOutcome { 
+
+}
+public class WallHit : ShootOutcome {
+    public LayerMask wallHit;
+    public float wallDepth;
+
+    public Vector3 entryPoint;
+    public Vector3 exitPoint;
+    public WallHit(LayerMask wall,  float wallDepth, Vector3 entryPoint, Vector3 exitPoint)
+    {
+        this.wallHit = wall;    
+        this.wallDepth = wallDepth;
+        this.entryPoint = entryPoint;
+        this.exitPoint = exitPoint;
+    }
+
+    public override string ToString()
+    {
+        return "you have hit a " +  wallHit.ToString() + " of depth " + wallDepth;
+    }
+}
+
+public class PlayerHit : ShootOutcome
+{
+    public BodyPart bodyPart;
+    public GameObject playerHit;
+    private String[] bodyPartEncode = { "legs", "body", "head" };
+    public PlayerHit(string bodyPart, GameObject playerHit)
+    {
+        if (bodyPart == "legs")
+            this.bodyPart = BodyPart.legs;
+        else if (bodyPart == "body")
+            this.bodyPart = BodyPart.body;
+        else if (bodyPart == "head")
+            this.bodyPart = BodyPart.head;
+
+        this.playerHit = playerHit;
+    }
+
+    public override string ToString()
+    {
+        return "you have hit a player at " + bodyPartEncode[(int)bodyPart];
+    }
+}
+
+/// <summary>
+/// DA SPOSTARE IN UN FILE APPOSITO!!!!!!!!!!!!!!!!!!!!!! **TO DO**
+/// </summary>
+public enum BodyPart { 
+    legs, body, head
+}
+
+
+
+
 
 

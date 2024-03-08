@@ -8,7 +8,7 @@ public class ScriptableWeapon : ScriptableObject
 {
     [field: SerializeField] public FiringMode firingMode {get; private set; }
     [field: SerializeField] public WeaponType weaponType { get; private set; }
-
+    [field: SerializeField] public WeaponPenetration weaponPenetration { get; private set; }
     [field: SerializeField] public int fireRate { get; private set; }
     [field: SerializeField] public int magSize { get; private set; }
     [field: SerializeField] public float reloadTime { get; private set; }
@@ -42,4 +42,9 @@ public struct FallofReduction
     public int distance;
     public float damageReduction;
 }
+
+public enum WeaponPenetration { 
+    soft, normal, hard
+}
+
 
