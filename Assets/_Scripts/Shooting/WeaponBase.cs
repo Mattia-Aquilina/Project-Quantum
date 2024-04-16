@@ -27,15 +27,15 @@ public abstract class WeaponBase : MonoBehaviour
     [SerializeField] TextMeshProUGUI magText;
     [SerializeField] Camera camera;
 
-    
+    [Header("Animations")]
+    [SerializeField] protected WeaponModel model;
+
     private string[] StateEncode = { "idle", "reloading", "shooting", "inspecting" };
     //Dati dell'arma
     [field: SerializeField]public ScriptableWeapon ScriptableWeapon { get; private set; }
 
     protected FiringMode firingMode;
     protected WeaponType weaponType;
-
-
 
     //Get them from the keybindings
     [Header("Key bindings")]
@@ -75,7 +75,7 @@ public abstract class WeaponBase : MonoBehaviour
 
         //control the heat
         if (currentHeat >= 0 && Time.time >= heatLockedTill)
-            currentHeat= currentHeat - ScriptableWeapon.heatDecay >0 ? currentHeat - ScriptableWeapon.heatDecay: 0f;
+            currentHeat = currentHeat - ScriptableWeapon.heatDecay > 0 ? currentHeat - ScriptableWeapon.heatDecay: 0f;
 
 
         //controllo l'input
@@ -89,7 +89,6 @@ public abstract class WeaponBase : MonoBehaviour
         if (Input.GetKey(shootKey)) weaponState = WeaponStates.shooting;
         else if (reloading) weaponState = WeaponStates.reloading;
         else weaponState = WeaponStates.idle;
-
     }
 
     protected void Shoot()
@@ -105,8 +104,6 @@ public abstract class WeaponBase : MonoBehaviour
 
         
         //spara con l'arma, utilizza il ray cast, riproduci l'animazione sul modello
-
-
 
         RaycastHit[] hits;
         //var weaponeRecoil = ScriptableWeapon.RecoilValues[Mathf.RoundToInt(currentHeat)];
@@ -156,15 +153,10 @@ public abstract class WeaponBase : MonoBehaviour
                 //abbiamo colpito un muro
                 //controlliamo in base alla penetrazione dell'arma
                 if (ScriptableWeapon.weaponPenetration == WeaponPenetration.hard)
-                {
                     //abbiamo un arma hard, misuriamo in ogni caso lo spessore del muro colpito
                     shootOutcome.Add(computeHitObjectDepth(hits[i].point, hits[i + 1].point, hitLayer));          
-                }
                 else if (ScriptableWeapon.weaponPenetration == WeaponPenetration.normal && !(HardWalls == (HardWalls | (1 << hitLayer))))
-                {
-                    shootOutcome.Add(computeHitObjectDepth(hits[i].point, hits[i + 1].point, hitLayer));
-                
-                }
+                    shootOutcome.Add(computeHitObjectDepth(hits[i].point, hits[i + 1].point, hitLayer));  
             }
         }
 
@@ -212,6 +204,9 @@ public abstract class WeaponBase : MonoBehaviour
 
     protected virtual void ResetShoot() => canShoot = true;
 
+    /// <summary>
+    /// in questo modo non si puo interrompere la ricarica
+    /// </summary>
 
     protected virtual void Reload()
     {
@@ -226,7 +221,15 @@ public abstract class WeaponBase : MonoBehaviour
         reloading = false;
         currentMag = ScriptableWeapon.magSize;
     }
+    
+    protected virtual void OnWeaponSwap()
+    {
+        //interrompiamo eventualmente la ricarica dell'arma
+        CancelInvoke();
+    }
 
+
+    //DEBUG ONLY
 
     public void OnDrawGizmos()
     {
