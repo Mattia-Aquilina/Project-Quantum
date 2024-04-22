@@ -1,0 +1,20 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8febaab233ef4a84692bb54093a98db0, type: 3}
+  m_Name: Ak47 model
+  m_EditorClassIdentifier: 
+  <controller>k__BackingField: {fileID: 9100000, guid: b9d38c050fcdc924396ca5cb678a334e, type: 2}
+  <ShootAnimationDuration>k__BackingField: 0.417
+  <ReloadAnimationDuration>k__BackingField: 5.625
+  <TakeAnimationDuration>k__BackingField: 0.833
+  <WatchAnimationDuration>k__BackingField: 4.86
+  <BulletTracerConfig>k__BackingField: {fileID: 11400000, guid: 904daf296ba150748b96978dd0314c33, type: 2}

@@ -56,7 +56,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform orientation;
     [SerializeField] Transform weaponsModel;
     [SerializeField] Camera camera;
-    [SerializeField] Rigidbody rigidbody;
+    [field: SerializeField] public Rigidbody rigidbody { get; private set; }
    
 
     //local variables
@@ -167,9 +167,11 @@ public class PlayerMovement : MonoBehaviour
 
     private void CameraMovement()
     {
+       
         //Center Camera in the current position
         //weaponsModel.transform.position = cameraHolder.transform.position;
         camera.transform.position = cameraHolder.transform.position + cameraOffset;
+        return;
         float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
         float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensY;
 

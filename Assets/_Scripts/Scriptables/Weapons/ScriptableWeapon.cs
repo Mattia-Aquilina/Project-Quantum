@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-[CreateAssetMenu(menuName = "Assets/Weapon", fileName = "weaponSample")]
+[CreateAssetMenu(menuName = "Assets/Weapon/Weapon Data", fileName = "weaponSample")]
 public class ScriptableWeapon : ScriptableObject
 {
     [field: SerializeField] public FiringMode firingMode {get; private set; }
@@ -13,10 +13,12 @@ public class ScriptableWeapon : ScriptableObject
     [field: SerializeField] public int magSize { get; private set; }
     [field: SerializeField] public float reloadTime { get; private set; }
     [field: SerializeField] public int NumberOfMags { get; private set; }
-    [field: SerializeField] public int[] RecoilValues { get; private set; }
+    [field: SerializeField] public Vector3[] RecoilValues { get; private set; }
     [field: SerializeField] public float heatDecay { get; private set; } = 0.1f;
     [field: SerializeField] public float heatWaitDecayTime { get; private set; } 
     [field: SerializeField] public int heatTimeCoefficient { get; private set; }
+    [field: SerializeField] public float movementInaccuracy { get; private set; }
+    [field: SerializeField] public float movementSpeedThreshold { get; private set; }
     [field: SerializeField] public FallofReduction[] fallofs { get; private set; }
 }
 public enum WeaponType

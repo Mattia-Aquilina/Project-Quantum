@@ -27,6 +27,7 @@ public abstract class WeaponBase : MonoBehaviour
     [SerializeField] TextMeshProUGUI magText;
     [SerializeField] Camera camera;
 
+    [SerializeField] PlayerMovement playerRef;
     [Header("Animations")]
     [SerializeField] protected WeaponModel model;
 
@@ -81,19 +82,41 @@ public abstract class WeaponBase : MonoBehaviour
         //controllo l'input
         var _isShooting = isShooting();
 
-        if (_isShooting && currentMag > 0 && canShoot) Shoot();
+        if (_isShooting && currentMag > 0 && canShoot &&!reloading) Shoot();
+
         else if (_isShooting && currentMag <= 0 && !reloading) Reload();
         else if (Input.GetKeyDown(reloadKey) && !reloading) Reload();
 
         //compute the state
-        if (Input.GetKey(shootKey)) weaponState = WeaponStates.shooting;
-        else if (reloading) weaponState = WeaponStates.reloading;
+        if (reloading) weaponState = WeaponStates.reloading;
+        else if (Input.GetKey(shootKey)) weaponState = WeaponStates.shooting;
         else weaponState = WeaponStates.idle;
+
+
+
+        switch (weaponState)
+        {
+            case WeaponStates.idle:
+                model.PlayAnimation(WeaponModel.Idle);
+                break;
+            case WeaponStates.reloading:
+                model.PlayAnimation(WeaponModel.Reload);
+                break;
+            case WeaponStates.shooting:
+                
+                break;
+            case WeaponStates.inspecting:
+                model.PlayAnimation(WeaponModel.Inspect);
+                break;
+            default:
+                break;
+        }
     }
 
     protected void Shoot()
     {
         Lockshoot();
+        
         //In teoria andrebbe riprodotto un suono adeguato
         if (currentMag <= 0) return;
 
@@ -106,10 +129,15 @@ public abstract class WeaponBase : MonoBehaviour
         //spara con l'arma, utilizza il ray cast, riproduci l'animazione sul modello
 
         RaycastHit[] hits;
-        //var weaponeRecoil = ScriptableWeapon.RecoilValues[Mathf.RoundToInt(currentHeat)];
+        var shootDirection = camera.transform.forward + ScriptableWeapon.RecoilValues[(int)currentHeat];
+        if (playerRef.rigidbody.velocity.magnitude >= ScriptableWeapon.movementSpeedThreshold)
+            shootDirection += new Vector3(UnityEngine.Random.Range(-ScriptableWeapon.movementInaccuracy, +ScriptableWeapon.movementInaccuracy), UnityEngine.Random.Range(-ScriptableWeapon.movementInaccuracy, +ScriptableWeapon.movementInaccuracy),0);
 
 
-        hits = Physics.RaycastAll(camera.transform.position, camera.transform.forward, 100f, canHitObjects);
+        //Compute weapon recoil using  var weaponeRecoil = ScriptableWeapon.RecoilValues[Mathf.RoundToInt(currentHeat)];
+
+
+        hits = Physics.RaycastAll(camera.transform.position, shootDirection, 100f, canHitObjects);
        
         //ordiniamo gli hit in base alla distanza (l'ordine non è garantito da RaycastAll
         Array.Sort(hits, (a, b) => Vector3.Distance(a.point, camera.transform.position).CompareTo(Vector3.Distance(b.point, camera.transform.position)));
@@ -122,32 +150,42 @@ public abstract class WeaponBase : MonoBehaviour
         {
             LayerMask hitLayer = hits[i].collider.gameObject.layer;
             //se in ogni momento incotriamo un muro non wallbangabile ci fermiamo
-            if (notWallbangable == (notWallbangable | (1 << hitLayer))) break;
+            if (notWallbangable == (notWallbangable | (1 << hitLayer)))
+            {
+                shootOutcome.Add(new ShootOutcome(hits[i].point));
+                break;
+            }
 
 
             //se l'arma è soft controllo solo il primo hit, visto che non puo wallbangare
             if (i == 0 && hittable == (hittable | (1 << hitLayer)) && ScriptableWeapon.weaponPenetration == WeaponPenetration.soft)
             {
-                shootOutcome.Add(new PlayerHit(hits[i].collider.tag, hits[i].collider.gameObject));
+                shootOutcome.Add(new PlayerHit(hits[i].collider.tag, hits[i].collider.gameObject, hits[i].point));
                 break;
             }
             else if (i == 0 && ScriptableWeapon.weaponPenetration == WeaponPenetration.soft)
+            {
+                shootOutcome.Add(new ShootOutcome(hits[i].point));
                 break;
+            }
 
 
             //gestiamo in maniera specifica l'ultimo elemento dell'array
             if (i == hits.Length - 1 && !(hittable == (hittable | (1 << hitLayer))))
+            {
+                shootOutcome.Add(new ShootOutcome(hits[i].point));
                 break;
+            }
             else if (i == hits.Length - 1 && (hittable == (hittable | (1 << hitLayer))))
             {
                 //the last element is a player
-                shootOutcome.Add(new PlayerHit(hits[i].collider.tag, hits[i].collider.gameObject));
+                shootOutcome.Add(new PlayerHit(hits[i].collider.tag, hits[i].collider.gameObject, hits[i].point));
                 break;
             }
 
             //gestiamo il caso in cui abbiamo colpito un giocatore
             if(hittable == (hittable | (1 << hitLayer))) {
-                shootOutcome.Add(new PlayerHit(hits[i].collider.tag, hits[i].collider.gameObject));
+                shootOutcome.Add(new PlayerHit(hits[i].collider.tag, hits[i].collider.gameObject, hits[i].point));
             }
             else { 
                 //abbiamo colpito un muro
@@ -162,11 +200,8 @@ public abstract class WeaponBase : MonoBehaviour
 
         this.outcome = shootOutcome;
 
-        //debug
-        foreach (var item in shootOutcome)
-        {
-            Debug.Log(item.ToString());
-        }
+        model.PlayAnimation(WeaponModel.Shoot);
+        model.BulletTracer(shootOutcome, shootDirection);
     }
     private ShootOutcome computeHitObjectDepth(Vector3 pointA, Vector3 pointB, LayerMask hitLayer)
     {
@@ -257,8 +292,10 @@ public enum WeaponStates
 }
 
 
-public abstract class ShootOutcome { 
+public class ShootOutcome {
+    public Vector3 hitPoint;
 
+    public ShootOutcome(Vector3 hitPoint) { this.hitPoint = hitPoint; }
 }
 public class WallHit : ShootOutcome {
     public LayerMask wallHit;
@@ -266,7 +303,7 @@ public class WallHit : ShootOutcome {
 
     public Vector3 entryPoint;
     public Vector3 exitPoint;
-    public WallHit(LayerMask wall,  float wallDepth, Vector3 entryPoint, Vector3 exitPoint)
+    public WallHit(LayerMask wall,  float wallDepth, Vector3 entryPoint, Vector3 exitPoint) : base(entryPoint)
     {
         this.wallHit = wall;    
         this.wallDepth = wallDepth;
@@ -285,8 +322,8 @@ public class PlayerHit : ShootOutcome
     public BodyPart bodyPart;
     public GameObject playerHit;
     private String[] bodyPartEncode = { "legs", "body", "head" };
-    public PlayerHit(string bodyPart, GameObject playerHit)
-    {
+    public PlayerHit(string bodyPart, GameObject playerHit, Vector3 hitPoint) : base(hitPoint)
+    { 
         if (bodyPart == "legs")
             this.bodyPart = BodyPart.legs;
         else if (bodyPart == "body")
@@ -295,6 +332,7 @@ public class PlayerHit : ShootOutcome
             this.bodyPart = BodyPart.head;
 
         this.playerHit = playerHit;
+
     }
 
     public override string ToString()

@@ -17,12 +17,39 @@ MonoBehaviour:
   <weaponPenetration>k__BackingField: 0
   <fireRate>k__BackingField: 7
   <magSize>k__BackingField: 25
-  <reloadTime>k__BackingField: 2.5
+  <reloadTime>k__BackingField: 3.5
   <NumberOfMags>k__BackingField: 1
-  <RecoilValues>k__BackingField: 
+  <RecoilValues>k__BackingField:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0.03, z: 0}
+  - {x: 0.01, y: 0.05, z: 0}
+  - {x: 0.02, y: 0.06, z: 0}
+  - {x: 0.046, y: 0.07, z: 0}
+  - {x: 0.03, y: 0.078, z: 0}
+  - {x: 0.02, y: 0.07, z: 0}
+  - {x: 0, y: 0.08, z: 0}
+  - {x: -0.02, y: 0.085, z: 0}
+  - {x: -0.03, y: 0.078, z: 0}
+  - {x: -0.04, y: 0.06, z: 0}
+  - {x: -0.045, y: 0.09, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 0}
   <heatDecay>k__BackingField: 0.1
-  <heatWaitDecayTime>k__BackingField: 0.5
+  <heatWaitDecayTime>k__BackingField: 0.3
   <heatTimeCoefficient>k__BackingField: 1
+  <movementInaccuracy>k__BackingField: 0.2
+  <movementSpeedThreshold>k__BackingField: 0.3
   <fallofs>k__BackingField:
   - distance: 30
     damageReduction: 1
