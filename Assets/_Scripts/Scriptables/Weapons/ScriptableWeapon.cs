@@ -20,6 +20,15 @@ public class ScriptableWeapon : ScriptableObject
     [field: SerializeField] public float movementInaccuracy { get; private set; }
     [field: SerializeField] public float movementSpeedThreshold { get; private set; }
     [field: SerializeField] public FallofReduction[] fallofs { get; private set; }
+    [field: SerializeField] private WeaponDamage[] damage;
+    public float[] WeaponDamage{ get; private set; }
+
+    private void OnValidate()
+    {
+        WeaponDamage = new float[3];
+        foreach (var item in damage)
+            WeaponDamage[(int)item.bodyPart] = item.damage;
+    }
 }
 public enum WeaponType
 {
@@ -48,5 +57,11 @@ public struct FallofReduction
 public enum WeaponPenetration { 
     soft, normal, hard
 }
+[System.Serializable]
+public struct WeaponDamage {
+    public BodyPart bodyPart;
+    public float damage;
+}
+
 
 

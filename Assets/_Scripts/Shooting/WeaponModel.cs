@@ -12,6 +12,7 @@ public class WeaponModel : MonoBehaviour
     [SerializeField] GameObject BulletTracerStartingPostion;
     [SerializeField] Vector3 offset;
     [SerializeField] Camera camera;
+    [SerializeField] PlayerMovement playerRef;
     protected AnimatorController controller;
     private object shootOutcome;
     public static readonly int Idle = Animator.StringToHash("Idle");
@@ -52,12 +53,13 @@ public class WeaponModel : MonoBehaviour
         // shootOutcome[shootOutcome.Count - 1]
         //ONLY FOR SHOOT ANIMATION
 
-        var startingPoint = camera.transform.position;
+        var _offset = BulletTracerStartingPostion.transform.position - playerRef.cameraHolder.transform.position;
+        var startingPoint = playerRef.cameraHolder.transform.position;
 
-        startingPoint += camera.transform.right * offset.x;
-        startingPoint += camera.transform.up * offset.y;
-        startingPoint += camera.transform.forward * offset.z;
-        Debug.Log(trailData.Count);
+        startingPoint += camera.transform.right * _offset.x;
+        startingPoint += camera.transform.up * _offset.y;
+        startingPoint += camera.transform.forward * _offset.z;
+        
         if (trailData.Count != 0)
         {
             StartCoroutine(scriptableWeaponModel.PlayTrail(

@@ -21,7 +21,6 @@ public class ScriptableWeaponModel : ScriptableObject
     public void Spawn()
     {
         TrailPool = new ObjectPool<TrailRenderer>(CreateTrail);
-        Debug.Log("trail pool inited");
     }
     public TrailRenderer CreateTrail()
     {

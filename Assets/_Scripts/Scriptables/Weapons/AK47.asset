@@ -22,36 +22,43 @@ MonoBehaviour:
   <RecoilValues>k__BackingField:
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0.03, z: 0}
-  - {x: 0.01, y: 0.05, z: 0}
-  - {x: 0.02, y: 0.06, z: 0}
-  - {x: 0.046, y: 0.07, z: 0}
-  - {x: 0.03, y: 0.078, z: 0}
-  - {x: 0.02, y: 0.07, z: 0}
-  - {x: 0, y: 0.08, z: 0}
-  - {x: -0.02, y: 0.085, z: 0}
-  - {x: -0.03, y: 0.078, z: 0}
-  - {x: -0.04, y: 0.06, z: 0}
-  - {x: -0.045, y: 0.09, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
+  - {x: 0.02, y: 0.03, z: 0}
+  - {x: 0.06, y: 0.07, z: 0}
+  - {x: 0.09, y: 0.1, z: 0}
+  - {x: 0.12, y: 0.13, z: 0}
+  - {x: 0.14, y: 0.14, z: 0}
+  - {x: 0.2, y: 0.17, z: 0}
+  - {x: 0.03, y: 0.2, z: 0}
+  - {x: -0.05, y: 0.22, z: 0}
+  - {x: -0.09, y: 0.2, z: 0}
+  - {x: -0.1, y: 0.19, z: 0}
+  - {x: -0.14, y: 0.2, z: 0}
+  - {x: -0.09, y: 0.22, z: 0}
+  - {x: -0.05, y: 0.22, z: 0}
+  - {x: 0.14, y: 0.2, z: 0}
+  - {x: 0.12, y: 0.19, z: 0}
+  - {x: -0.05, y: 0.19, z: 0}
+  - {x: 0.06, y: 0.2, z: 0}
+  - {x: 0.14, y: 0.19, z: 0}
+  - {x: -0.14, y: 0.2, z: 0}
+  - {x: -0.05, y: 0.21, z: 0}
+  - {x: 0.06, y: 0.195, z: 0}
   - {x: 0, y: 0, z: 0}
   - {x: 0, y: 0, z: 0}
   <heatDecay>k__BackingField: 0.1
   <heatWaitDecayTime>k__BackingField: 0.3
   <heatTimeCoefficient>k__BackingField: 1
-  <movementInaccuracy>k__BackingField: 0.2
+  <movementInaccuracy>k__BackingField: 0.5
   <movementSpeedThreshold>k__BackingField: 0.3
   <fallofs>k__BackingField:
-  - distance: 30
+  - distance: 10
     damageReduction: 1
   - distance: 50
     damageReduction: 0.8
+  damage:
+  - bodyPart: 0
+    damage: 25
+  - bodyPart: 1
+    damage: 40
+  - bodyPart: 2
+    damage: 160

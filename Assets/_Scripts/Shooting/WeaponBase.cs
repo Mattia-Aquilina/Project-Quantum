@@ -200,6 +200,9 @@ public abstract class WeaponBase : MonoBehaviour
 
         this.outcome = shootOutcome;
 
+        ApplyShoot(shootOutcome);
+
+
         model.PlayAnimation(WeaponModel.Shoot);
         model.BulletTracer(shootOutcome, shootDirection);
     }
@@ -214,6 +217,31 @@ public abstract class WeaponBase : MonoBehaviour
         return new WallHit(hitLayer, wallDepth, pointA, hit.point);
     }
 
+    protected virtual void ApplyShoot(List<ShootOutcome> outcomes)
+    {
+        //dovremmo usare questa funzione per calcolare il danno complessivo dell'arma, per ora considero solo la distanza
+        //In futuro dobbiamo considerare anche i muri attraversati
+
+        foreach (var outcome in outcomes)
+        {
+            if (outcome is PlayerHit)
+            {
+                var hit = (PlayerHit)outcome;
+                var distance = Vector3.Distance(hit.hitPoint, camera.transform.position);
+
+                float reduction = 1f;
+                
+                foreach(var fallof in ScriptableWeapon.fallofs)
+                {
+                    if (fallof.distance < distance)
+                        reduction = fallof.damageReduction;
+
+                }
+
+                hit.playerHit.GetComponentInParent<IDamageable>().Damage(ScriptableWeapon.WeaponDamage[(int)hit.bodyPart] * reduction);
+            }
+        }
+    }
     /// <summary>
     /// Ritorna true solo se è stato inviando il comando di sparare
     /// </summary>
@@ -344,6 +372,7 @@ public class PlayerHit : ShootOutcome
 /// <summary>
 /// DA SPOSTARE IN UN FILE APPOSITO!!!!!!!!!!!!!!!!!!!!!! **TO DO**
 /// </summary>
+[System.Serializable]
 public enum BodyPart { 
     legs, body, head
 }

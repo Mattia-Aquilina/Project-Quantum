@@ -48,14 +48,15 @@ public class PlayerMovement : MonoBehaviour
 
     //Object components
     [Header("Camera Controls")]
-    [SerializeField] Vector3 cameraOffset;
-    [SerializeField] GameObject cameraHolder;
+    [SerializeField] Camera camera;
+    [field: SerializeField] public  Vector3 cameraOffset { get; private set; }
+    [field: SerializeField] public GameObject cameraHolder { get; private set; }
 
 
     private PlayerMovementState movState = PlayerMovementState.idle;
     [SerializeField] Transform orientation;
     [SerializeField] Transform weaponsModel;
-    [SerializeField] Camera camera;
+    
     [field: SerializeField] public Rigidbody rigidbody { get; private set; }
    
 
@@ -171,7 +172,7 @@ public class PlayerMovement : MonoBehaviour
         //Center Camera in the current position
         //weaponsModel.transform.position = cameraHolder.transform.position;
         camera.transform.position = cameraHolder.transform.position + cameraOffset;
-        return;
+        
         float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
         float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensY;
 
