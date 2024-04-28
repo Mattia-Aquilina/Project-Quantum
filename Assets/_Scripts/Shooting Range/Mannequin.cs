@@ -22,8 +22,8 @@ public class Mannequin : MonoBehaviour,IDamageable
     [SerializeField] ShootingText textPrefab;
     [SerializeField] GameObject textSpawnPoint;
 
-    
-    
+
+    public Action Die;
 
 
     // Update is called once per frame
@@ -47,6 +47,7 @@ public class Mannequin : MonoBehaviour,IDamageable
 
     private void OnDie()
     {
+        Die?.Invoke();
         if (!canDie) return;
 
         mannequinBody.SetActive(false);

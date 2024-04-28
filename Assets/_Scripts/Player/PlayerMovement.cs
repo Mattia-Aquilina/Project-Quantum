@@ -11,8 +11,9 @@ public class PlayerMovement : MonoBehaviour
     private string[] StateEncode = { "slowWalking", "walking", "crouching", "air", "airCrouching", "idle" };
 
     [Header("Camera Control")]
-    [SerializeField] float sensX = 800;
-    [SerializeField] float sensY = 800;
+    [SerializeField] float sens = 800;
+    public float GetSense() => sens;
+    public float SetSense(float value) => sens = value;
 
     [Header("Movement")]
     float movSpeed = 10f;
@@ -173,8 +174,8 @@ public class PlayerMovement : MonoBehaviour
         //weaponsModel.transform.position = cameraHolder.transform.position;
         camera.transform.position = cameraHolder.transform.position + cameraOffset;
         
-        float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sensX;
-        float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sensY;
+        float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * sens;
+        float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * sens;
 
         yRotation += mouseX;
         xRotation -= mouseY;
