@@ -53,13 +53,23 @@ public class WeaponModel : MonoBehaviour
         // shootOutcome[shootOutcome.Count - 1]
         //ONLY FOR SHOOT ANIMATION
 
-        var _offset = BulletTracerStartingPostion.transform.position - playerRef.cameraHolder.transform.position;
-        var startingPoint = playerRef.cameraHolder.transform.position;
+       // var _offset = BulletTracerStartingPostion.transform.position - playerRef.cameraHolder.transform.position;
+       // var startingPoint = playerRef.cameraHolder.transform.position;
 
-        startingPoint += camera.transform.right * _offset.x;
-        startingPoint += camera.transform.up * _offset.y;
-        startingPoint += camera.transform.forward * _offset.z;
+       // startingPoint += camera.transform.right;
+        //startingPoint += camera.transform.up ;
+        //startingPoint += camera.transform.forward;
+
+        var startingPoint = BulletTracerStartingPostion.transform.position;
+
         
+        // provare ad agganciare tracerstartposition al corpo
+        float downwardOffset = 0.2f; 
+        startingPoint += BulletTracerStartingPostion.transform.up * -downwardOffset;
+
+
+
+
         if (trailData.Count != 0)
         {
             StartCoroutine(scriptableWeaponModel.PlayTrail(

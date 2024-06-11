@@ -157,9 +157,14 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(CrouchKey))
         {
             scalableObjectsContainer.transform.localScale = new Vector3(1, crouchYScale, 1);
-            rigidbody.AddForce(Vector3.down * 5f, ForceMode.Impulse);
+
+            //controllo se il giocatore 'e in aria per attivare o meno la forza
+            if (grounded)
+            {
+                rigidbody.AddForce(Vector3.down * 5f, ForceMode.Impulse);
+            }
         }
-            
+
         if (Input.GetKeyUp(CrouchKey))
             scalableObjectsContainer.transform.localScale = new Vector3(1, startYScale, 1);
         

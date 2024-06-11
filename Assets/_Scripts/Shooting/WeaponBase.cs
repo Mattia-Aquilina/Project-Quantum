@@ -53,6 +53,9 @@ public abstract class WeaponBase : MonoBehaviour
     protected float heatLockedTill = 0f;
 
 
+    //roba per grafica
+    [SerializeField] private GameObject bulletHoleGraphic;
+
     // Start is called before the first frame update
 
     protected virtual void Awake()
@@ -138,7 +141,14 @@ public abstract class WeaponBase : MonoBehaviour
 
 
         hits = Physics.RaycastAll(camera.transform.position, shootDirection, 100f, canHitObjects);
-       
+
+        foreach (var hit in hits)
+        {
+
+            //mostro un hole per ogni proiettile sparato
+            Instantiate(bulletHoleGraphic, hit.point, Quaternion.Euler(0, 180, 0));
+        }
+
         //ordiniamo gli hit in base alla distanza (l'ordine non è garantito da RaycastAll
         Array.Sort(hits, (a, b) => Vector3.Distance(a.point, camera.transform.position).CompareTo(Vector3.Distance(b.point, camera.transform.position)));
 
@@ -303,7 +313,7 @@ public abstract class WeaponBase : MonoBehaviour
                 if(item.GetType() == typeof(WallHit))
                 {
                     var wall = (WallHit)item;
-                    Gizmos.color = Color.yellow;
+                    Gizmos.color = Color.blue;
                     Gizmos.DrawSphere(wall.entryPoint, .2f);
                     Gizmos.color = Color.red;
                     Gizmos.DrawSphere(wall.exitPoint, .2f);
